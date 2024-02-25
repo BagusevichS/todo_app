@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import '../Constants/mycolors.dart';
 import '../Widgets/todo_item.dart';
@@ -7,7 +6,7 @@ import '../model/todo.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Home extends StatefulWidget {
-  const Home({Key? key,}) : super(key: key);
+  const Home({Key? key}) : super(key: key);
 
   @override
   State<Home> createState() => _HomeState();
@@ -41,34 +40,36 @@ class _HomeState extends State<Home> {
         elevation: 0,
       ),
       backgroundColor: tdGrey,
-      body: Stack(
+      body: Column(
         children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-            child: Column(
-              children: [
-                searchBox(),
-                Expanded(
-                  child: ListView(
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.only(top: 50, bottom: 20),
-                        child: const Text(
-                          'Все задачи',
-                          style: TextStyle(
-                              fontSize: 30, fontWeight: FontWeight.w500),
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+              child: Column(
+                children: [
+                  searchBox(),
+                  Expanded(
+                    child: ListView(
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.only(top: 50, bottom: 20),
+                          child: const Text(
+                            'Все задачи',
+                            style: TextStyle(
+                                fontSize: 30, fontWeight: FontWeight.w500),
+                          ),
                         ),
-                      ),
-                      for (ToDo todo in _foundToDo.reversed)
-                        ToDoItem(
-                          todo: todo,
-                          onToDoChanged: _handleToDoChange,
-                          onDeleteItem: _toDoDeleteItem
-                        ),
-                    ],
+                        for (ToDo todo in _foundToDo.reversed)
+                          ToDoItem(
+                            todo: todo,
+                            onToDoChanged: _handleToDoChange,
+                            onDeleteItem: _toDoDeleteItem,
+                          ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
           Align(
@@ -76,28 +77,29 @@ class _HomeState extends State<Home> {
             child: Row(
               children: [
                 Expanded(
-                    child: Container(
-                  margin: const EdgeInsets.only(bottom: 20, right: 20, left: 20),
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                  decoration: BoxDecoration(
-                      color: tdWhite,
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.grey,
-                          offset: Offset(0.0, 0.0),
-                          blurRadius: 10.0,
-                          spreadRadius: 0.0,
-                        ),
-                      ],
-                      borderRadius: BorderRadius.circular(10)
+                  child: Container(
+                    margin: const EdgeInsets.only(bottom: 20, right: 20, left: 20),
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                    decoration: BoxDecoration(
+                        color: tdWhite,
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.grey,
+                            offset: Offset(0.0, 0.0),
+                            blurRadius: 10.0,
+                            spreadRadius: 0.0,
+                          ),
+                        ],
+                        borderRadius: BorderRadius.circular(10)
+                    ),
+                    child: TextField(
+                      controller: _todoController,
+                      decoration: const InputDecoration(
+                          hintText: 'Добавь новую заметку',
+                          border: InputBorder.none),
+                    ),
                   ),
-                  child: TextField(
-                    controller: _todoController,
-                    decoration: const InputDecoration(
-                        hintText: 'Добавь новую заметку',
-                        border: InputBorder.none),
-                  ),
-                )),
+                ),
                 Container(
                   margin: const EdgeInsets.only(bottom: 20, right: 20),
                   child: ElevatedButton(onPressed: () {
@@ -105,12 +107,12 @@ class _HomeState extends State<Home> {
                       _addToDoItem(_todoController.text);
                     }
                   },
-                      style: ElevatedButton.styleFrom(
+                    style: ElevatedButton.styleFrom(
                         backgroundColor: tdBlue,
                         minimumSize: const Size(60, 60),
                         elevation: 10
-                        ),
-                      child: const Text('+',style: TextStyle(fontSize: 40),),
+                    ),
+                    child: const Text('+',style: TextStyle(fontSize: 40),),
                   ),
                 ),
               ],
@@ -130,14 +132,14 @@ class _HomeState extends State<Home> {
   }
 
   void _toDoDeleteItem(String id) async {
-      setState(() {
-       todosList.removeWhere((item) => item.id == id);
-     });
+    setState(() {
+      todosList.removeWhere((item) => item.id == id);
+    });
     //строчка ниже нужна для того, чтобы удалялся элемент во время поиска
     setState(() {
       _foundToDo.removeWhere((item) => item.id == id);
     });
-      await _saveToDoList();
+    await _saveToDoList();
   }
 
   void _runFilter(String enteredKeyword){
@@ -159,7 +161,6 @@ class _HomeState extends State<Home> {
       _foundToDo = results;
     });
   }
-
 
   Future<void> _saveToDoList() async {
     final jsonList = todosList.map((todo) => todo.toJson()).toList();
@@ -191,8 +192,6 @@ class _HomeState extends State<Home> {
     await _saveToDoList();
     _runFilter(_todoController.text);
   }
-
-
 
   Widget searchBox() {
     return Container(
